@@ -1,6 +1,6 @@
 use raw_window_handle::{HasWindowHandle, RawWindowHandle};
 use vizia::prelude::*;
-use winapi::shared::windef::HWND;
+use winapi::{shared::windef::HWND, um::{dwmapi::DwmExtendFrameIntoClientArea, uxtheme::MARGINS}};
 
 fn main() -> Result<(), ApplicationError> {
     Application::new(|cx| {
@@ -70,8 +70,19 @@ impl Model for AppData {
                                     SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED,
                                 );
                             }
-                        }
 
+                            let margins = MARGINS {
+                                cxLeftWidth: 40,
+                                cxRightWidth: 40,
+                                cyTopHeight: 40,
+                                cyBottomHeight: 40,
+                            };
+                            unsafe {
+                                DwmExtendFrameIntoClientArea(hwnd, &margins);
+                            }
+    
+                        }
+                     
                         window_vibrancy::apply_acrylic(window, Some((0, 0, 0, 0))).unwrap();
                         // window_vibrancy::apply_mica(window, Some(false)).unwrap();
                         self.is_blurred = true;
