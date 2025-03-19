@@ -1,4 +1,4 @@
-use raw_window_handle::{HasRawWindowHandle, HasWindowHandle, RawWindowHandle};
+use raw_window_handle::{HasWindowHandle, RawWindowHandle};
 use vizia::prelude::*;
 use winapi::shared::windef::HWND;
 
