@@ -1,4 +1,4 @@
-use raw_window_handle::{HasRawWindowHandle, RawWindowHandle};
+use raw_window_handle::{HasRawWindowHandle, HasWindowHandle, RawWindowHandle};
 use vizia::prelude::*;
 use winapi::shared::windef::HWND;
 
@@ -46,10 +46,15 @@ impl Model for AppData {
                                 GetWindowLongW, SetWindowLongW, SetWindowPos, GWL_STYLE,
                                 SWP_FRAMECHANGED, SWP_NOMOVE, SWP_NOSIZE, SWP_NOZORDER, WS_CAPTION,
                             };
-                            let hwnd: HWND = match window.raw_window_handle().unwrap() {
-                                RawWindowHandle::Win32(handle) => handle.hwnd.get() as HWND,
+
+                            let handle = window.window_handle().unwrap();
+                            let hwnd: HWND = match handle.as_raw() {
+                                RawWindowHandle::Win32(win32_handle) => {
+                                    win32_handle.hwnd.get() as HWND
+                                }
                                 _ => panic!("Not a Win32 window"),
                             };
+
                             unsafe {
                                 let style = GetWindowLongW(hwnd, GWL_STYLE);
                                 // 去除标题栏 (WS_CAPTION)，保留其他样式（如 WS_THICKFRAME 用于调整大小）
