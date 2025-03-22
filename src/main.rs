@@ -1,6 +1,4 @@
-use raw_window_handle::{HasWindowHandle, RawWindowHandle};
 use vizia::prelude::*;
-use winapi::{shared::windef::HWND, um::{dwmapi::DwmExtendFrameIntoClientArea, uxtheme::MARGINS}};
 
 fn main() -> Result<(), ApplicationError> {
     Application::new(|cx| {
@@ -42,9 +40,14 @@ impl Model for AppData {
                         // 在 Windows 平台上，修改窗口样式：去除标题栏，但保留边框以便调整大小
                         #[cfg(target_os = "windows")]
                         {
+                            use raw_window_handle::{HasWindowHandle, RawWindowHandle};
                             use winapi::um::winuser::{
                                 GetWindowLongW, SetWindowLongW, SetWindowPos, GWL_STYLE,
                                 SWP_FRAMECHANGED, SWP_NOMOVE, SWP_NOSIZE, SWP_NOZORDER, WS_CAPTION,
+                            };
+                            use winapi::{
+                                shared::windef::HWND,
+                                um::{dwmapi::DwmExtendFrameIntoClientArea, uxtheme::MARGINS},
                             };
 
                             let handle = window.window_handle().unwrap();
@@ -72,17 +75,16 @@ impl Model for AppData {
                             }
 
                             let margins = MARGINS {
-                                cxLeftWidth: 40,
-                                cxRightWidth: 40,
-                                cyTopHeight: 40,
-                                cyBottomHeight: 40,
+                                cxLeftWidth: 0,
+                                cxRightWidth: 0,
+                                cyTopHeight: 0,
+                                cyBottomHeight: 0,
                             };
                             unsafe {
                                 DwmExtendFrameIntoClientArea(hwnd, &margins);
                             }
-    
                         }
-                     
+
                         window_vibrancy::apply_acrylic(window, Some((0, 0, 0, 0))).unwrap();
                         // window_vibrancy::apply_mica(window, Some(false)).unwrap();
                         self.is_blurred = true;
