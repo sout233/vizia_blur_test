@@ -5,6 +5,6 @@ edition = "2021"
 
 [dependencies]
 raw-window-handle = "0.6.2"
-vizia = { git = "https://github.com/vizia/vizia", branch = "main" }
+vizia = { path = "vizia" }
 winapi = { version = "0.3.9", features = ["dwmapi", "minwindef", "winuser"] }
 window-vibrancy = "0.6.0"

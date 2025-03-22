@@ -16,6 +16,8 @@ fn main() -> Result<(), ApplicationError> {
     })
     .transparent(true)
     .vsync(false)
+    .decorations(false)
+    .undecorated_shadow(true)
     .on_create(|_| {
         // can't work
         println!("Created");
@@ -37,53 +39,52 @@ impl Model for AppData {
                         println!("Applying blur");
                         window.set_title("Blurred Window");
 
-                        // 在 Windows 平台上，修改窗口样式：去除标题栏，但保留边框以便调整大小
-                        #[cfg(target_os = "windows")]
-                        {
-                            use raw_window_handle::{HasWindowHandle, RawWindowHandle};
-                            use winapi::um::winuser::{
-                                GetWindowLongW, SetWindowLongW, SetWindowPos, GWL_STYLE,
-                                SWP_FRAMECHANGED, SWP_NOMOVE, SWP_NOSIZE, SWP_NOZORDER, WS_CAPTION,
-                            };
-                            use winapi::{
-                                shared::windef::HWND,
-                                um::{dwmapi::DwmExtendFrameIntoClientArea, uxtheme::MARGINS},
-                            };
+                        // #[cfg(target_os = "windows")]
+                        // {
+                        //     use raw_window_handle::{HasWindowHandle, RawWindowHandle};
+                        //     use winapi::um::winuser::{
+                        //         GetWindowLongW, SetWindowLongW, SetWindowPos, GWL_STYLE,
+                        //         SWP_FRAMECHANGED, SWP_NOMOVE, SWP_NOSIZE, SWP_NOZORDER, WS_CAPTION,
+                        //     };
+                        //     use winapi::{
+                        //         shared::windef::HWND,
+                        //         um::{dwmapi::DwmExtendFrameIntoClientArea, uxtheme::MARGINS},
+                        //     };
 
-                            let handle = window.window_handle().unwrap();
-                            let hwnd: HWND = match handle.as_raw() {
-                                RawWindowHandle::Win32(win32_handle) => {
-                                    win32_handle.hwnd.get() as HWND
-                                }
-                                _ => panic!("Not a Win32 window"),
-                            };
+                        //     let handle = window.window_handle().unwrap();
+                        //     let hwnd: HWND = match handle.as_raw() {
+                        //         RawWindowHandle::Win32(win32_handle) => {
+                        //             win32_handle.hwnd.get() as HWND
+                        //         }
+                        //         _ => panic!("Not a Win32 window"),
+                        //     };
 
-                            unsafe {
-                                let style = GetWindowLongW(hwnd, GWL_STYLE);
-                                // 去除标题栏 (WS_CAPTION)，保留其他样式（如 WS_THICKFRAME 用于调整大小）
-                                SetWindowLongW(hwnd, GWL_STYLE, style & !WS_CAPTION as i32);
-                                // 刷新窗口的非客户区，使样式改变生效
-                                SetWindowPos(
-                                    hwnd,
-                                    std::ptr::null_mut(),
-                                    0,
-                                    0,
-                                    0,
-                                    0,
-                                    SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED,
-                                );
-                            }
+                        //     unsafe {
+                        //         let style = GetWindowLongW(hwnd, GWL_STYLE);
+                        //         // 去除标题栏 (WS_CAPTION)，保留其他样式（如 WS_THICKFRAME 用于调整大小）
+                        //         SetWindowLongW(hwnd, GWL_STYLE, style & !WS_CAPTION as i32);
+                        //         // 刷新窗口的非客户区，使样式改变生效
+                        //         SetWindowPos(
+                        //             hwnd,
+                        //             std::ptr::null_mut(),
+                        //             0,
+                        //             0,
+                        //             0,
+                        //             0,
+                        //             SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_FRAMECHANGED,
+                        //         );
+                        //     }
 
-                            let margins = MARGINS {
-                                cxLeftWidth: 0,
-                                cxRightWidth: 0,
-                                cyTopHeight: 0,
-                                cyBottomHeight: 0,
-                            };
-                            unsafe {
-                                DwmExtendFrameIntoClientArea(hwnd, &margins);
-                            }
-                        }
+                        //     let margins = MARGINS {
+                        //         cxLeftWidth: 0,
+                        //         cxRightWidth: 0,
+                        //         cyTopHeight: 0,
+                        //         cyBottomHeight: 0,
+                        //     };
+                        //     unsafe {
+                        //         DwmExtendFrameIntoClientArea(hwnd, &margins);
+                        //     }
+                        // }
 
                         window_vibrancy::apply_acrylic(window, Some((0, 0, 0, 0))).unwrap();
                         // window_vibrancy::apply_mica(window, Some(false)).unwrap();
